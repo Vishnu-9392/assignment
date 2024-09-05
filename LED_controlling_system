@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdint.h>
+
+// Define LEDSettings structure
+typedef struct {
+    uint8_t state;        // ON or OFF state (1 for ON, 0 for OFF)
+    uint8_t brightness;   // Brightness level (0 to 255)
+    uint32_t color;       // RGB encoded color value
+} LEDSettings;
+
+// Define LEDGroup structure
+typedef struct {
+    LEDSettings singleLED; // Individual LED settings
+    uint8_t groupState;    // Collective state of the group (1 for ON, 0 for OFF)
+    uint8_t groupBrightness; // Collective brightness adjustment for the group
+} LEDGroup;
+
+// Function to initialize LED group with default values
+void initLEDGroup(LEDGroup *group) {
+    group->singleLED.state = 0;            // All LEDs OFF
+    group->singleLED.brightness = 0;       // Minimum brightness
+    group->singleLED.color = 0x000000;     // No color (black)
+    group->groupState = 0;                 // Group state OFF
+    group->groupBrightness = 0;            // Group brightness minimum
+}
+
+// Function to update individual and group LED settings
+void updateLEDGroupSettings(LEDGroup *group, uint8_t groupState, uint8_t groupBrightness, 
+                            uint8_t state, uint8_t brightness, uint32_t color) {
+    // Update individual LED settings
+    group->singleLED.state = state;
+    group->singleLED.brightness = brightness;
+    group->singleLED.color = color;
+    
+    // Update group-level settings
+    group->groupState = groupState;
+    group->groupBrightness = groupBrightness;
+}
+
+// Function to display the status of the LED group
+void displayLEDGroupStatus(const LEDGroup *group) {
+    printf("Individual LED State: %s\n", group->singleLED.state ? "ON" : "OFF");
+    printf("Individual LED Brightness: %u\n", group->singleLED.brightness);
+    printf("Individual LED Color (RGB): #%06X\n", group->singleLED.color);
+    printf("Group State: %s\n", group->groupState ? "ON" : "OFF");
+    printf("Group Brightness: %u\n", group->groupBrightness);
+}
+
+int main() {
+    LEDGroup group;
+    
+    // Initialize the group
+    initLEDGroup(&group);
+    displayLEDGroupStatus(&group);
+    
+    printf("\nUpdating LED Group settings...\n");
+    
+    // Update the group and individual settings
+    updateLEDGroupSettings(&group, 1, 200, 1, 150, 0xFF00FF);
+    
+    // Display updated settings
+    displayLEDGroupStatus(&group);
+    
+    return 0;
+}
